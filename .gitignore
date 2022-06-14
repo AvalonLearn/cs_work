@@ -1,0 +1,6 @@
+//vscode 相关文件
+.vscode
+*.code-workspace
+
+//运行生成二进制文件
+*.exe
