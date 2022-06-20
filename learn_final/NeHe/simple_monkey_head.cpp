@@ -3,7 +3,6 @@
 #include "GL/GLAUX.H"
 #include <stdio.h>
 #include <tchar.h>
-#include "GLext.h"
 
 #include <vector>
 #include <fstream>
