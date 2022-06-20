@@ -25,7 +25,7 @@ bool keys[256];          //按键状态
 bool active = true;      //激活状态
 bool fullscreen = FALSE; //全屏状态
 
-char *window_title = "纹理映射";
+char *window_title = "猴头期末实验";
 //旋转用
 const float piover180 = 0.0174532925f;
 float heading = 0.0f;
