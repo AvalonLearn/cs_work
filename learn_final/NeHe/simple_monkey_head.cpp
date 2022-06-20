@@ -50,8 +50,6 @@ BOOL lp;    // L键按下
 BOOL sp;    //空格键是否按下
 int part1;  //圆盘的起始角度
 int part2;  //圆盘的结束角度
-int p1 = 0; //增量
-int p2 = 1;
 
 GLfloat LightAmbient[] = {0.8f, 0.8f, 0.8f, 1.0f};
 //环境光参数
@@ -60,7 +58,7 @@ GLfloat LightDiffuse[] = {1.0f, 1.0f, 1.0f, 1.0f};
 GLfloat LightPosition[] = {5.0f, 0.0f, 0.0f, 1.0f};
 //光源位置
 
-GLuint filter; //纹理过滤器
+GLuint filter; //纹理选择
 
 typedef struct Texture
 {
@@ -72,6 +70,7 @@ typedef struct Texture
     int loadTexture(char *Filepath);
     void freeTexture();
 } Texture;
+//纹理结构体
 
 int Texture::loadTexture(char *Filepath)
 {
@@ -94,7 +93,6 @@ void Texture::freeTexture()
 const int length = 11;
 Texture texture[length];
 GLuint monkeymodel;
-GLuint world;
 
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 
@@ -127,134 +125,118 @@ void LoadTexture()
     if (texture[0].loadTexture("./Data/mud.bmp"))
     {
         //设置纹理属性
-        //试图创建Nearest滤波贴图
+        //创建Nearest滤波贴图
         glGenTextures(1, &texture[0].id);
         glBindTexture(GL_TEXTURE_2D, texture[0].id);
-        // glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-        // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-        // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-        // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        // gluBuild2DMipmaps(GL_TEXTURE_2D, 3, texture[0].width, texture[0].height, GL_RGB, GL_UNSIGNED_BYTE, texture[0].data);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, texture[0].width, texture[0].height, 0, GL_RGB, GL_UNSIGNED_BYTE, texture[0].data);
-        // stbi_image_free(texture[0].data);
     }
     if (texture[1].loadTexture("./Data/grass.bmp"))
     {
         //设置纹理属性
-        //试图创建Linear滤波贴图
+        //创建Linear滤波贴图
         glGenTextures(1, &texture[1].id);
         glBindTexture(GL_TEXTURE_2D, texture[1].id);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, texture[1].width, texture[1].height, 0, GL_RGB, GL_UNSIGNED_BYTE, texture[1].data);
-        // stbi_image_free(texture[0].data);
     }
     if (texture[2].loadTexture("./Data/sky.bmp"))
     {
         //设置纹理属性
-        //试图创建MipMapped滤波贴图
+        //创建MipMapped滤波贴图
         glGenTextures(1, &texture[2].id);
         glBindTexture(GL_TEXTURE_2D, texture[2].id);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
         gluBuild2DMipmaps(GL_TEXTURE_2D, 3, texture[2].width, texture[2].height, GL_RGB, GL_UNSIGNED_BYTE, texture[2].data);
-        // stbi_image_free(texture[0].data);
     }
     if (texture[3].loadTexture("./Data/BG.bmp"))
     {
         //设置纹理属性
-        //试图创建MipMapped滤波贴图
+        //创建MipMapped滤波背景贴图
         glGenTextures(1, &texture[3].id);
         glBindTexture(GL_TEXTURE_2D, texture[3].id);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
         gluBuild2DMipmaps(GL_TEXTURE_2D, 3, texture[3].width, texture[3].height, GL_RGB, GL_UNSIGNED_BYTE, texture[3].data);
-        // stbi_image_free(texture[0].data);
     }
     if (texture[4].loadTexture("./Data/water.bmp"))
     {
         //设置纹理属性
-        //试图创建MipMapped滤波贴图
+        //创建MipMapped滤波水的贴图
         glGenTextures(1, &texture[4].id);
         glBindTexture(GL_TEXTURE_2D, texture[4].id);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
         gluBuild2DMipmaps(GL_TEXTURE_2D, 3, texture[4].width, texture[4].height, GL_RGB, GL_UNSIGNED_BYTE, texture[4].data);
-        // stbi_image_free(texture[0].data);
     }
     if (texture[5].loadTexture("./Data/sand.bmp"))
     {
         //设置纹理属性
-        //试图创建MipMapped滤波贴图
+        //创建MipMapped滤波沙子贴图
         glGenTextures(1, &texture[5].id);
         glBindTexture(GL_TEXTURE_2D, texture[5].id);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
         gluBuild2DMipmaps(GL_TEXTURE_2D, 3, texture[5].width, texture[5].height, GL_RGB, GL_UNSIGNED_BYTE, texture[5].data);
-        // stbi_image_free(texture[0].data);
     }
     if (texture[6].loadTexture("./Data/rocks.bmp"))
     {
         //设置纹理属性
-        //试图创建MipMapped滤波贴图
+        //试图创建MipMapped滤波岩石贴图
         glGenTextures(1, &texture[6].id);
         glBindTexture(GL_TEXTURE_2D, texture[6].id);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
         gluBuild2DMipmaps(GL_TEXTURE_2D, 3, texture[6].width, texture[6].height, GL_RGB, GL_UNSIGNED_BYTE, texture[6].data);
-        // stbi_image_free(texture[0].data);
     }
     if (texture[7].loadTexture("./Data/snow.bmp"))
     {
         //设置纹理属性
-        //试图创建MipMapped滤波贴图
+        //创建MipMapped滤波雪地贴图
         glGenTextures(1, &texture[7].id);
         glBindTexture(GL_TEXTURE_2D, texture[7].id);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
         gluBuild2DMipmaps(GL_TEXTURE_2D, 3, texture[7].width, texture[7].height, GL_RGB, GL_UNSIGNED_BYTE, texture[7].data);
-        // stbi_image_free(texture[0].data);
     }
-    if(texture[8].loadTexture("./Data/moon.jpg")){
+    if (texture[8].loadTexture("./Data/moon.jpg"))
+    {
         //设置纹理属性
-        //试图创建MipMapped滤波贴图
+        //创建MipMapped滤波月球贴图
         glGenTextures(1, &texture[8].id);
         glBindTexture(GL_TEXTURE_2D, texture[8].id);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
         gluBuild2DMipmaps(GL_TEXTURE_2D, 3, texture[8].width, texture[8].height, GL_RGB, GL_UNSIGNED_BYTE, texture[8].data);
-        // stbi_image_free(texture[0].data);
     }
-    if(texture[9].loadTexture("./Data/star.jpg")){
+    if (texture[9].loadTexture("./Data/star.jpg"))
+    {
         //设置纹理属性
-        //试图创建MipMapped滤波贴图
+        //创建MipMapped滤波星星贴图
         glGenTextures(1, &texture[9].id);
         glBindTexture(GL_TEXTURE_2D, texture[9].id);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
         gluBuild2DMipmaps(GL_TEXTURE_2D, 3, texture[9].width, texture[9].height, GL_RGB, GL_UNSIGNED_BYTE, texture[9].data);
-        // stbi_image_free(texture[0].data);
     }
-    //texture[10]空着,这样就是白色的了
+    // texture[10]空着,这样就是白色的了
 }
 
 void CreateWorld()
 {
     //创建一个空的场景
-    // world=glGenLists(1);
-    // glNewList(world,GL_COMPILE);
 
     //底层
     glBindTexture(GL_TEXTURE_2D, texture[1].id);
@@ -370,11 +352,9 @@ void CreateWorld()
         }
     }
     glEnd();
-    // glEndList();
 }
 
-
-
+//这里的类用于读取monkey.obj文件，专门针对monkey.obj文件的格式进行了设计
 class ObjLoader
 {
 public:
@@ -387,8 +367,8 @@ public:
     ObjLoader(string filename); //读取函数
     void Draw();                //绘制函数
 private:
-    vector<vector<GLfloat>> v;  //存放顶点(x,y,z)坐标
-    vector<vector<GLint>> f;    //存放面的顶点、纹理、法向量索引
+    vector<vector<GLfloat>> v; //存放顶点(x,y,z)坐标
+    vector<vector<GLint>> f;   //存放面的顶点、纹理、法向量索引
 };
 ObjLoader::ObjLoader(string filename)
 {
@@ -475,13 +455,15 @@ void ObjLoader::Draw()
             vec2[1] = a.y - c.y;
             vec2[2] = a.z - c.z;
 
-            //(x3-x1,y3-y1,z3-z1)
+            //叉乘得到的结果
             vec3[0] = vec1[1] * vec2[2] - vec1[2] * vec2[1];
             vec3[1] = vec2[0] * vec1[2] - vec2[2] * vec1[0];
             vec3[2] = vec2[1] * vec1[0] - vec2[0] * vec1[1];
 
+            //计算法向量的模
             GLfloat D = sqrt(pow(vec3[0], 2) + pow(vec3[1], 2) + pow(vec3[2], 2));
 
+            //进行法向量的归一化处理
             VN[0] = vec3[0] / D;
             VN[1] = vec3[1] / D;
             VN[2] = vec3[2] / D;
@@ -505,7 +487,7 @@ ObjLoader monkey = ObjLoader(filename);
 int InitGL(GLvoid)
 {
     //初始化
-    LoadTexture();
+    LoadTexture();                                    //加载纹理
     glEnable(GL_TEXTURE_2D);                          //启用纹理映射
     glShadeModel(GL_SMOOTH);                          //启用平滑着色
     glLightfv(GL_LIGHT1, GL_AMBIENT, LightAmbient);   //设置环境光参数
@@ -525,13 +507,13 @@ int InitGL(GLvoid)
     monkey.Draw();
     glPolygonMode(GL_BACK, GL_FILL);  //后表面完全填充
     glPolygonMode(GL_FRONT, GL_FILL); //前表面完全填充
+    //初始化网格信息（该网格用于绘制周围环境的表面）
     for (int x = 0; x < xlen; x++)
     {
         for (int y = 0; y < ylen; y++)
         {
             meshtable[x][y][0] = ((float(x) / (xlen - 1)) * 2 * worldsize - worldsize);
             meshtable[x][y][1] = ((float(y) / (ylen - 1)) * 2 * worldsize - worldsize);
-            // printf("%f %f\n",meshtable[x][y][0],meshtable[x][y][1]);
         }
     }
     return TRUE;
@@ -544,20 +526,21 @@ int DrawGLScene(GLvoid)
     //清除颜色缓存和深度缓存,重置场景
     glLoadIdentity();
     //将当前点移动到屏幕中心
-    GLfloat xtrans = -xpos;
-    GLfloat ztrans = -zpos;
-    GLfloat ytrans = -walkbias - 0.25f;
-    GLfloat sceneroty = 360.0f - yrot;
-    lookupdown = 360 - xrot;
+    GLfloat xtrans = -xpos;             //场景实际的x轴偏移量
+    GLfloat ztrans = -zpos;             //场景实际的z轴偏移量
+    GLfloat ytrans = -walkbias - 0.25f; //用于人物移动时镜头上下的移动
+    GLfloat sceneroty = 360.0f - yrot;  //场景实际左右旋转的角度
+    lookupdown = 360 - xrot;            //场景实际上下旋转的角度
 
+    //相关变换矩阵
     glRotatef(lookupdown, 1.0f, 0, 0);
     glRotatef(sceneroty, 0, 1.0f, 0);
     glTranslatef(xtrans, ytrans, ztrans);
+    //实际场景的上下移动
     glTranslatef(0.0f, -ypos, 0.0f);
 
     CreateWorld();
-    // glCallList(world);
-    glBindTexture(GL_TEXTURE_2D, texture[filter].id);
+    glBindTexture(GL_TEXTURE_2D, texture[filter].id); //设置猴头的纹理
     glCallList(monkeymodel);
 
     return TRUE;
@@ -814,10 +797,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 {
     MSG msg;
     BOOL done = FALSE;
-    fullscreen = FALSE;
-    // if(MessageBox(NULL,_T("你想在全屏模式下运行吗？"),_T("设置全屏模式"),MB_YESNO|MB_ICONQUESTION)==IDNO){
-    //     fullscreen=FALSE;
-    // }
+    fullscreen = TRUE;
+    if (MessageBox(NULL, _T("你想在全屏模式下运行吗？"), _T("设置全屏模式"), MB_YESNO | MB_ICONQUESTION) == IDNO)
+    {
+        fullscreen = FALSE;
+    }
+
     if (!CreateGLWindow(window_title, 640, 480, 16, fullscreen))
     {
         return 0;
@@ -848,20 +833,21 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
                 {
                     DrawGLScene();
                     SwapBuffers(hDC);
-                    if (keys[' '] && !sp)
-				{
-					sp=TRUE;
-                    LightAmbient[0] = (float)rand() / RAND_MAX;
-                    LightAmbient[1] = (float)rand() / RAND_MAX;
-                    LightAmbient[2] = (float)rand() / RAND_MAX;
-                    glLightfv(GL_LIGHT1, GL_AMBIENT, LightAmbient);
-                    glEnable(GL_LIGHT1);  
-				}
-				if (!keys[' '])
-				{
-					sp=FALSE;
-				}
-                    if (keys['L'] && !lp)
+                    if (keys[' '] && !sp)//空格键按下
+                    {
+                        sp = TRUE;
+                        LightAmbient[0] = (float)rand() / RAND_MAX;
+                        LightAmbient[1] = (float)rand() / RAND_MAX;
+                        LightAmbient[2] = (float)rand() / RAND_MAX;
+                        //设置随机的光线
+                        glLightfv(GL_LIGHT1, GL_AMBIENT, LightAmbient);
+                        glEnable(GL_LIGHT1);
+                    }
+                    if (!keys[' '])
+                    {
+                        sp = FALSE;
+                    }
+                    if (keys['L'] && !lp)//同上
                     {
                         lp = TRUE;
                         light = !light;
@@ -878,19 +864,21 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
                     {
                         lp = FALSE;
                     }
-                    if (keys['C']&&!cp)
+                    if (keys['C'] && !cp)
                     {
                         cp = TRUE;
                         filter++;
-                        if(filter>length-1){
-                            filter=0;
+                        if (filter > length - 1)
+                        {
+                            filter = 0;
                         }
-                        printf("now filter=%d\n",filter);
+                        printf("now filter=%d\n", filter);
                     }
-                    if(!keys['C']){
+                    if (!keys['C'])
+                    {
                         cp = FALSE;
                     }
-                    if (keys['F'])
+                    if (keys['F'])//不使用D键来做向右转是因为我电脑D键不灵敏，可以改成D就行
                     {
                         yrot -= 0.05;
                         if (yrot < 0.0)
@@ -898,15 +886,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
                             yrot += 360.0;
                         }
                     }
-                    if (keys[VK_PRIOR])
+                    if (keys[VK_PRIOR])//PageUp键
                     {
                         ypos += 0.01;
                     }
-                    if (keys[VK_NEXT])
+                    if (keys[VK_NEXT])//PageDown键
                     {
                         ypos -= 0.01;
                     }
-                    if (keys[VK_UP])
+                    if (keys[VK_UP])//方向键上箭头
                     {
                         xpos -= (float)sin(yrot * piover180) * 0.01f;
                         zpos -= (float)cos(yrot * piover180) * 0.01f;
@@ -920,7 +908,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
                         }
                         walkbias = (float)sin(walkbiasangle * piover180) / 20.0f;
                     }
-                    if (keys[VK_DOWN])
+                    if (keys[VK_DOWN])//方向键下箭头
                     {
                         xpos += (float)sin(yrot * piover180) * 0.01f;
                         zpos += (float)cos(yrot * piover180) * 0.01f;
@@ -934,7 +922,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
                         }
                         walkbias = (float)sin(walkbiasangle * piover180) / 20.0f;
                     }
-                    if (keys[VK_LEFT])
+                    if (keys[VK_LEFT])//方向键左箭头
                     {
                         xpos -= 0.01f;
                         if (walkbiasangle >= 359.0)
@@ -947,7 +935,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
                         }
                         walkbias = (float)sin(walkbiasangle * piover180) / 20.0f;
                     }
-                    if (keys[VK_RIGHT])
+                    if (keys[VK_RIGHT])//方向键右箭头
                     {
                         xpos += 0.01f;
                         if (walkbiasangle <= 1.0)
