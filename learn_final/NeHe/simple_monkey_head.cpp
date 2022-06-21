@@ -924,7 +924,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
                     }
                     if (keys[VK_LEFT])//方向键左箭头
                     {
-                        xpos -= 0.01f;
+                        xpos -= (float)sin((yrot+90) * piover180) * 0.01f;
+                        zpos -= (float)cos((yrot+90) * piover180) * 0.01f;
+                        // zpos -= (float)sin(yrot * piover180) * 0.01f;
+                        // xpos -= (float)cos(yrot * piover180) * 0.01f;
+                        // printf("xpos=%f ypos=%f zpos=%f yrot=%d\n", xpos, ypos, zpos, yrot);
                         if (walkbiasangle >= 359.0)
                         {
                             walkbiasangle = 0.0;
@@ -937,7 +941,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
                     }
                     if (keys[VK_RIGHT])//方向键右箭头
                     {
-                        xpos += 0.01f;
+                        xpos += (float)sin((yrot+90) * piover180) * 0.01f;
+                        zpos += (float)cos((yrot+90) * piover180) * 0.01f;
+                        // zpos += (float)sin(yrot * piover180) * 0.01f;
+                        // xpos += (float)cos(yrot * piover180) * 0.01f;
+                        // printf("xpos=%f ypos=%f zpos=%f yrot=%d\n", xpos, ypos, zpos, yrot);
                         if (walkbiasangle <= 1.0)
                         {
                             walkbiasangle = 359.0;
